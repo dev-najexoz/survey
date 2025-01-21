@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SurveyHub</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .candidate {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            width: 90%;
+            padding: 10px;
+        }
+        .candidate input {
+            margin-right: 10px;
+        }
+        .btn {
+            display: block;
+            width: 90%;
+            padding: 10px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #0056b3;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #007BFF;
+        }
+        #admin-section input{
+            border: 2px solid #0056b3;
+            border-radius: 4px;
+            width: 90%;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Election Voting</h1>
+
+        <div id="voting-section">
+            <h2>Vote</h2>
+            <div id="candidates-list">
+                <div class="candidate">
+                    <input type="radio" name="candidate" value="Najah" id="candidate1">
+                    <label for="candidate1">Najah</label>
+                </div>
+                <div class="candidate">
+                    <input type="radio" name="candidate" value="Nadir" id="candidate2">
+                    <label for="candidate2">Nadir</label>
+                </div>
+                <div class="candidate">
+                    <input type="radio" name="candidate" value="Anas" id="candidate3">
+                    <label for="candidate3">Anas</label>
+                </div>
+            </div>
+            <button id="submit-vote" class="btn">Submit Vote</button>
+        </div>
+
+        <div id="admin-section">
+            <h2>Admin Login</h2>
+            <input type="password" id="admin-password" placeholder="Admin Password">
+            <button id="check-results" class="btn">Check Results</button>
+            <button id="export-results" class="btn">Export Results</button>
+        </div>
+
+        <div id="results-section" style="display: none;">
+            <h2>Election Results</h2>
+            <div id="results-list">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const adminPassword = 'admin123';
+        const candidates = ['Najah', 'Nadir', 'Anas'];
+        const votes = { 'Najah': 0, 'Nadir': 0, 'Anas': 0 };
+
+        const submitVoteButton = document.getElementById('submit-vote');
+        const adminPasswordInput = document.getElementById('admin-password');
+        const checkResultsButton = document.getElementById('check-results');
+        const exportResultsButton = document.getElementById('export-results');
+        const resultsSection = document.getElementById('results-section');
+        const resultsList = document.getElementById('results-list');
+
+        // Render results
+        function renderResults() {
+            resultsList.innerHTML = '';
+            candidates.forEach(candidate => {
+                const voteCount = votes[candidate];
+                const div = document.createElement('div');
+                div.textContent = `${candidate}: ${voteCount} vote(s)`;
+                resultsList.appendChild(div);
+            });
+        }
+
+        // Export results to a text file
+        function exportResults() {
+            let resultsData = 'Election Results\n';
+            candidates.forEach(candidate => {
+                const voteCount = votes[candidate];
+                resultsData += `${candidate}: ${voteCount} vote(s)\n`;
+            });
+
+            const blob = new Blob([resultsData], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'election_results.txt';
+            link.click();
+        }
+
+        // Submit vote
+        submitVoteButton.addEventListener('click', () => {
+            const selectedCandidate = document.querySelector('input[name="candidate"]:checked');
+            if (selectedCandidate) {
+                const candidate = selectedCandidate.value;
+                votes[candidate] += 1;
+                alert(`Your vote for ${candidate} has been submitted!`);
+            } else {
+                alert('Please select a candidate to vote for.');
+            }
+        });
+
+        // Check results
+        checkResultsButton.addEventListener('click', () => {
+            const password = adminPasswordInput.value;
+            if (password === adminPassword) {
+                renderResults();
+                resultsSection.style.display = 'block';
+            } else {
+                alert('Incorrect password.');
+            }
+        });
+
+        // Export results
+        exportResultsButton.addEventListener('click', () => {
+            const password = adminPasswordInput.value;
+            if (password === adminPassword) {
+                exportResults();
+            } else {
+                alert('Incorrect password. Cannot export results.');
+            }
+        });
+    </script>
+</body>
+</html>
